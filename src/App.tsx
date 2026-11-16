@@ -3,6 +3,7 @@ import {
   Activity,
   ArrowRightLeft,
   BarChart3,
+  Database,
   Download,
   Radar,
   RotateCcw,
@@ -17,6 +18,7 @@ import { DEFAULT_APPD, DEFAULT_ASSUMPTIONS, convert } from './conversion';
 import {
   AnalyticsSection,
   ApmSection,
+  DatabaseSection,
   EndUserMonitoringSection,
   InfrastructureSection,
   SyntheticSection,
@@ -185,10 +187,18 @@ export default function App() {
 
           <FeatureRow
             icon={<Server size={16} />}
-            appdLabel="Infrastructure, DB & Container Monitoring"
+            appdLabel="Infrastructure & Container Monitoring"
             splunkLabel="Infrastructure Monitoring"
             appdContent={<InfrastructureSection value={appd} onChange={setAppd} />}
             splunkContent={<ResultCard item={byKey['im-hosts']} />}
+          />
+
+          <FeatureRow
+            icon={<Database size={16} />}
+            appdLabel="Database Monitoring (DBMON)"
+            splunkLabel="Database Monitoring"
+            appdContent={<DatabaseSection value={appd} onChange={setAppd} />}
+            splunkContent={<ResultCard item={byKey['db-monitoring']} />}
           />
 
           <FeatureRow

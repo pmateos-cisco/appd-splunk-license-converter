@@ -41,9 +41,16 @@ export function AssumptionsPanel({
           accent="orange"
         />
         <NumberField
-          label="DB instances → IM hosts"
+          label="DB instances → IM hosts (if not already counted)"
           value={value.dbInstanceToHostRatio}
           onChange={(v) => set('dbInstanceToHostRatio', v)}
+          step={0.1}
+          accent="orange"
+        />
+        <NumberField
+          label="DB instances → Database Monitoring"
+          value={value.dbInstanceToDbMonitoringRatio}
+          onChange={(v) => set('dbInstanceToDbMonitoringRatio', v)}
           step={0.1}
           accent="orange"
         />

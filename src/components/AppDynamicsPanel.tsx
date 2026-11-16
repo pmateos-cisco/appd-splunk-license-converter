@@ -1,4 +1,4 @@
-import { Server, Database, Boxes, Globe, Smartphone } from 'lucide-react';
+import { Server, Boxes, Globe, Smartphone } from 'lucide-react';
 import type { AppDynamicsEntitlements } from '../types';
 import { NumberField, SelectField, ToggleField } from './Field';
 
@@ -74,23 +74,6 @@ export function InfrastructureSection({
       </div>
 
       <div>
-        <SubLabel icon={<Database size={12} />} text="Database Monitoring" />
-        <div className="space-y-2">
-          <NumberField
-            label="Database instances (DBMON)"
-            value={value.dbInstances}
-            onChange={(v) => set('dbInstances', v)}
-          />
-          <ToggleField
-            label="These DBs run on hosts already counted above"
-            checked={value.dbRunsOnExistingServer}
-            onChange={(v) => set('dbRunsOnExistingServer', v)}
-            hint="Avoids double-counting IM hosts"
-          />
-        </div>
-      </div>
-
-      <div>
         <SubLabel icon={<Boxes size={12} />} text="Cloud Native / Kubernetes" />
         <NumberField
           label="Monitored containers"
@@ -98,6 +81,31 @@ export function InfrastructureSection({
           onChange={(v) => set('containers', v)}
         />
       </div>
+    </div>
+  );
+}
+
+export function DatabaseSection({
+  value,
+  onChange,
+}: {
+  value: AppDynamicsEntitlements;
+  onChange: (v: AppDynamicsEntitlements) => void;
+}) {
+  const set = useSetter(value, onChange);
+  return (
+    <div className="space-y-3">
+      <NumberField
+        label="Database instances (DBMON)"
+        value={value.dbInstances}
+        onChange={(v) => set('dbInstances', v)}
+      />
+      <ToggleField
+        label="These DB hosts are already counted in Infrastructure Monitoring"
+        checked={value.dbRunsOnExistingServer}
+        onChange={(v) => set('dbRunsOnExistingServer', v)}
+        hint="Avoids double-counting IM hosts above — Database Monitoring itself is still counted either way"
+      />
     </div>
   );
 }
