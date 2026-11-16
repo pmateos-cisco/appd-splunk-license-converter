@@ -3,5 +3,8 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // GitHub Pages serves project sites from /<repo-name>/, so assets must be
+  // referenced with that base path in production. Local dev still runs at /.
+  base: process.env.GITHUB_PAGES ? '/appd-splunk-license-converter/' : '/',
   plugins: [react()],
 })
