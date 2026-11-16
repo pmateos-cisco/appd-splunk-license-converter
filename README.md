@@ -20,13 +20,18 @@ can size a migration/renewal and see the numbers update live.
 | AppDynamics | → | Splunk Observability Cloud |
 |---|---|---|
 | APM units (agent instances) | → | APM hosts |
-| Server Visibility (SIM) instances | → | Infrastructure Monitoring hosts |
-| Database Monitoring (DBMON) instances | → | Infrastructure Monitoring hosts |
-| Cloud Native / Kubernetes containers | → | Infrastructure Monitoring host-equivalents |
+| Server Visibility (SIM) instances + Cloud Native / Kubernetes containers | → | Infrastructure Monitoring hosts |
+| Database Monitoring (DBMON) instances | → | Database Monitoring instances (its own product, not folded into Infrastructure Monitoring) |
 | Browser RUM page views | → | RUM sessions |
 | Mobile RUM app launches | → | RUM sessions |
 | Synthetic Monitoring check runs | → | Synthetic Monitoring run units |
 | Business iQ / Transaction Analytics events | → | Log Observer ingest (GB/day) — closest proxy, no 1:1 product match |
+
+The UI pairs each AppDynamics feature directly with its Splunk O11y
+equivalent, row by row, so it's obvious which input drives which output.
+Database Monitoring gets its own row because Splunk O11y licenses it
+separately from generic host-level Infrastructure Monitoring — mirroring how
+AppDynamics licenses DBMON separately from Server Visibility.
 
 Every ratio above (plus an optional sizing headroom %) lives in the
 **Assumptions** panel in the app and persists to `localStorage` so you can

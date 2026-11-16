@@ -10,7 +10,13 @@ export interface AppDynamicsEntitlements {
   serverInstances: number;
   /** Database Monitoring (DBMON) - monitored database instances */
   dbInstances: number;
-  /** Whether the monitored DB instances already run on a server counted in serverInstances */
+  /**
+   * Whether the hosts running these DB instances are already counted in
+   * serverInstances above (Server Visibility). Splunk Database Monitoring is
+   * licensed separately from Infrastructure Monitoring host coverage, so this
+   * only controls whether the underlying host also needs its own extra IM
+   * host entitlement, not whether Database Monitoring itself is needed.
+   */
   dbRunsOnExistingServer: boolean;
   /** Cloud Native / Kubernetes - monitored containers */
   containers: number;
@@ -29,8 +35,15 @@ export interface ConversionAssumptions {
   apmUnitToHostRatio: number;
   /** 1 AppD SIM server instance maps to this many Splunk Infrastructure Monitoring hosts */
   serverToHostRatio: number;
-  /** 1 AppD DBMON instance maps to this many incremental Splunk IM hosts (when not already covered) */
+  /**
+   * 1 AppD DBMON instance maps to this many incremental Splunk Infrastructure
+   * Monitoring hosts, for the underlying DB host itself (only applied when
+   * dbRunsOnExistingServer is false). Independent of Database Monitoring
+   * coverage below.
+   */
   dbInstanceToHostRatio: number;
+  /** 1 AppD DBMON instance maps to this many Splunk Database Monitoring instances */
+  dbInstanceToDbMonitoringRatio: number;
   /** How many monitored containers roll up into one Splunk IM host-equivalent license */
   containersPerHost: number;
   /** Average Browser RUM page views per user session */

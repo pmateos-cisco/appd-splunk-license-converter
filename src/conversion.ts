@@ -22,6 +22,7 @@ export const DEFAULT_ASSUMPTIONS: ConversionAssumptions = {
   apmUnitToHostRatio: 1,
   serverToHostRatio: 1,
   dbInstanceToHostRatio: 1,
+  dbInstanceToDbMonitoringRatio: 1,
   containersPerHost: 16,
   pageViewsPerSession: 5,
   launchesPerSession: 1,
@@ -60,13 +61,15 @@ export function convert(
     sourceNote: 'AppDynamics: APM (Java/.NET/Node/PHP/Python agents)',
   });
 
-  // 2. Infrastructure Monitoring hosts (from Server Visibility + DB instances + containers)
+  // 2. Infrastructure Monitoring hosts (Server Visibility + containers, plus the
+  // underlying DB host itself when it isn't already one of the servers above —
+  // this is host-level OS monitoring, separate from Database Monitoring below).
   const hostsFromServers = appd.serverInstances * a.serverToHostRatio;
-  const hostsFromDb = appd.dbRunsOnExistingServer
+  const hostsFromDbHosts = appd.dbRunsOnExistingServer
     ? 0
     : appd.dbInstances * a.dbInstanceToHostRatio;
   const hostsFromContainers = appd.containers / Math.max(a.containersPerHost, 0.0001);
-  const rawImHosts = hostsFromServers + hostsFromDb + hostsFromContainers;
+  const rawImHosts = hostsFromServers + hostsFromDbHosts + hostsFromContainers;
   lineItems.push({
     key: 'im-hosts',
     product: 'Infrastructure Monitoring',
@@ -75,14 +78,32 @@ export function convert(
     quantityWithHeadroom: withHeadroom(rawImHosts, a),
     unit: 'hosts',
     note: `From ${round(hostsFromServers)} Server Visibility host(s) + ${round(
-      hostsFromDb,
-    )} DB Monitoring host(s) + ${round(hostsFromContainers, 1)} host-equivalent(s) from ${
-      appd.containers
-    } container(s) at ${a.containersPerHost}/host.`,
-    sourceNote: 'AppDynamics: Server Visibility (SIM), Database Monitoring, Cloud Native containers',
+      hostsFromDbHosts,
+    )} host(s) for DB servers not already counted + ${round(
+      hostsFromContainers,
+      1,
+    )} host-equivalent(s) from ${appd.containers} container(s) at ${
+      a.containersPerHost
+    }/host. This is OS/host-level monitoring only — see Database Monitoring below for the DB engine metrics themselves.`,
+    sourceNote: 'AppDynamics: Server Visibility (SIM), Cloud Native containers',
   });
 
-  // 3. RUM sessions
+  // 3. Database Monitoring — Splunk O11y has its own Database Monitoring
+  // product (query performance, DB-engine metrics), distinct from generic
+  // Infrastructure Monitoring, mirroring AppDynamics' separate DBMON license.
+  const rawDbMonitoring = appd.dbInstances * a.dbInstanceToDbMonitoringRatio;
+  lineItems.push({
+    key: 'db-monitoring',
+    product: 'Database Monitoring',
+    metric: 'Monitored database instances',
+    rawQuantity: rawDbMonitoring,
+    quantityWithHeadroom: withHeadroom(rawDbMonitoring, a),
+    unit: 'databases',
+    note: `${appd.dbInstances} AppD Database Monitoring (DBMON) instance(s) \u00D7 ${a.dbInstanceToDbMonitoringRatio}. Needed regardless of whether the underlying DB host also carries an Infrastructure Monitoring host license (see above) — Database Monitoring and host-level Infrastructure Monitoring are licensed separately in both products.`,
+    sourceNote: 'AppDynamics: Database Monitoring (DBMON)',
+  });
+
+  // 4. RUM sessions
   const browserSessionsM = (appd.browserPageViewsM) / Math.max(a.pageViewsPerSession, 0.0001);
   const mobileSessionsM = (appd.mobileLaunchesM) / Math.max(a.launchesPerSession, 0.0001);
   const rawRumSessions = (browserSessionsM + mobileSessionsM) * 1_000_000;
@@ -103,7 +124,7 @@ export function convert(
     sourceNote: 'AppDynamics: End User Monitoring (Browser RUM, Mobile RUM)',
   });
 
-  // 4. Synthetic Monitoring
+  // 5. Synthetic Monitoring
   const rawSyntheticRuns = appd.syntheticRunsK * 1000 * a.syntheticRunRatio;
   const synPackSize = 1000;
   lineItems.push({
@@ -119,7 +140,7 @@ export function convert(
     sourceNote: 'AppDynamics: Synthetic Monitoring',
   });
 
-  // 5. Log Observer (proxy for Business iQ / Transaction Analytics)
+  // 6. Log Observer (proxy for Business iQ / Transaction Analytics)
   const rawGbPerMonth = (appd.analyticsEventsM * 1_000_000 * a.avgEventSizeKb) / (1024 * 1024);
   const rawGbPerDay = rawGbPerMonth / 30;
   lineItems.push({
