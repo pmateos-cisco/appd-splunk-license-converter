@@ -1,17 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Activity,
   ArrowRightLeft,
+  BarChart3,
   Download,
+  Radar,
   RotateCcw,
+  Server,
   SlidersHorizontal,
   TriangleAlert,
+  Users,
   X,
 } from 'lucide-react';
 import type { AppDynamicsEntitlements, ConversionAssumptions } from './types';
 import { DEFAULT_APPD, DEFAULT_ASSUMPTIONS, convert } from './conversion';
-import { AppDynamicsPanel } from './components/AppDynamicsPanel';
+import {
+  AnalyticsSection,
+  ApmSection,
+  EndUserMonitoringSection,
+  InfrastructureSection,
+  SyntheticSection,
+} from './components/AppDynamicsPanel';
 import { AssumptionsPanel } from './components/AssumptionsPanel';
-import { ResultsPanel } from './components/ResultsPanel';
+import { ResultCard } from './components/ResultsPanel';
+import { FeatureRow } from './components/FeatureRow';
 
 const STORAGE_KEY = 'appd-splunk-converter-state-v1';
 
@@ -43,6 +55,10 @@ export default function App() {
   }, [appd, assumptions]);
 
   const result = useMemo(() => convert(appd, assumptions), [appd, assumptions]);
+  const byKey = useMemo(
+    () => Object.fromEntries(result.lineItems.map((li) => [li.key, li])),
+    [result],
+  );
 
   function resetAll() {
     setAppd(DEFAULT_APPD);
@@ -143,26 +159,61 @@ export default function App() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
-                AppDynamics entitlements
-              </h2>
-            </div>
-            <AppDynamicsPanel value={appd} onChange={setAppd} />
-          </section>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6 mb-2 px-1">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-emerald-400">
+              AppDynamics entitlements
+            </h2>
+          </div>
+          <div className="hidden lg:flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-orange-400" />
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-orange-400">
+              Splunk Observability Cloud equivalent
+            </h2>
+          </div>
+        </div>
 
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="h-2 w-2 rounded-full bg-orange-400" />
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-orange-400">
-                Splunk Observability Cloud equivalent
-              </h2>
-            </div>
-            <ResultsPanel lineItems={result.lineItems} />
-          </section>
+        <div className="space-y-5">
+          <FeatureRow
+            icon={<Activity size={16} />}
+            appdLabel="APM"
+            splunkLabel="APM"
+            appdContent={<ApmSection value={appd} onChange={setAppd} />}
+            splunkContent={<ResultCard item={byKey['apm-hosts']} />}
+          />
+
+          <FeatureRow
+            icon={<Server size={16} />}
+            appdLabel="Infrastructure, DB & Container Monitoring"
+            splunkLabel="Infrastructure Monitoring"
+            appdContent={<InfrastructureSection value={appd} onChange={setAppd} />}
+            splunkContent={<ResultCard item={byKey['im-hosts']} />}
+          />
+
+          <FeatureRow
+            icon={<Users size={16} />}
+            appdLabel="End User Monitoring"
+            splunkLabel="RUM"
+            appdContent={<EndUserMonitoringSection value={appd} onChange={setAppd} />}
+            splunkContent={<ResultCard item={byKey['rum-sessions']} />}
+          />
+
+          <FeatureRow
+            icon={<Radar size={16} />}
+            appdLabel="Synthetic Monitoring"
+            splunkLabel="Synthetic Monitoring"
+            appdContent={<SyntheticSection value={appd} onChange={setAppd} />}
+            splunkContent={<ResultCard item={byKey['synthetic']} />}
+          />
+
+          <FeatureRow
+            icon={<BarChart3 size={16} />}
+            appdLabel="Business iQ / Transaction Analytics"
+            splunkLabel="Log Observer"
+            appdContent={<AnalyticsSection value={appd} onChange={setAppd} />}
+            splunkContent={<ResultCard item={byKey['log-observer']} />}
+          />
         </div>
       </main>
 
