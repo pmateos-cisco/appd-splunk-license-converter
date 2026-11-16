@@ -37,6 +37,14 @@ Every ratio above (plus an optional sizing headroom %) lives in the
 **Assumptions** panel in the app and persists to `localStorage` so you can
 tune it to match real guidance from an account team, then come back to it.
 
+## Suggesting ideas
+
+There's an **Ideas** button in the app header. It opens a pre-filled GitHub
+issue (labelled `enhancement`) on this repo and shows a live list of
+suggestions people have already made, so feedback has somewhere durable to go
+instead of getting lost in chat. No backend involved — it's just the GitHub
+Issues API, since this is a static site with no server to run.
+
 ## Stack
 
 - React 19 + TypeScript

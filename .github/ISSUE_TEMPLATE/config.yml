@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Browse existing ideas
+    url: https://github.com/pmateos-cisco/appd-splunk-license-converter/issues?q=is%3Aissue+label%3Aenhancement
+    about: See what's already been suggested before opening a new one.

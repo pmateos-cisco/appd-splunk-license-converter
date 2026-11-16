@@ -1,0 +1,29 @@
+name: Suggest an idea
+description: Suggest an improvement to the AppDynamics → Splunk O11y licensing converter
+title: "[Idea] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What's the idea?
+      description: What should the app do that it doesn't today, or do differently?
+      placeholder: e.g. Add a row for AlwaysOn Profiling, or let me import entitlements from a CSV.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does this matter?
+      description: What problem does this solve, or what would it make easier when sizing a conversion?
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+      description: Links, examples, or screenshots that help explain it.
+    validations:
+      required: false

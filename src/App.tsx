@@ -5,6 +5,7 @@ import {
   BarChart3,
   Database,
   Download,
+  Lightbulb,
   Radar,
   RotateCcw,
   Server,
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 import type { AppDynamicsEntitlements, ConversionAssumptions } from './types';
 import { DEFAULT_APPD, DEFAULT_ASSUMPTIONS, convert } from './conversion';
+import { NEW_IDEA_URL } from './config';
 import {
   AnalyticsSection,
   ApmSection,
@@ -24,6 +26,7 @@ import {
   SyntheticSection,
 } from './components/AppDynamicsPanel';
 import { AssumptionsPanel } from './components/AssumptionsPanel';
+import { IdeasPanel } from './components/IdeasPanel';
 import { ResultCard } from './components/ResultsPanel';
 import { FeatureRow } from './components/FeatureRow';
 
@@ -50,6 +53,7 @@ export default function App() {
   const [appd, setAppd] = useState<AppDynamicsEntitlements>(initial.appd);
   const [assumptions, setAssumptions] = useState<ConversionAssumptions>(initial.assumptions);
   const [showAssumptions, setShowAssumptions] = useState(false);
+  const [showIdeas, setShowIdeas] = useState(false);
   const [dismissedBanner, setDismissedBanner] = useState(false);
 
   useEffect(() => {
@@ -105,6 +109,14 @@ export default function App() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setShowIdeas((s) => !s)}
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg
+                border border-orange-500/40 text-orange-300 hover:bg-orange-500/10 transition-colors"
+            >
+              <Lightbulb size={14} />
+              Ideas
+            </button>
+            <button
               onClick={() => setShowAssumptions((s) => !s)}
               className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg
                 border border-orange-500/40 text-orange-300 hover:bg-orange-500/10 transition-colors"
@@ -155,6 +167,12 @@ export default function App() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {showIdeas && (
+          <div className="mb-6">
+            <IdeasPanel />
+          </div>
+        )}
+
         {showAssumptions && (
           <div className="mb-6">
             <AssumptionsPanel value={assumptions} onChange={setAssumptions} />
@@ -227,9 +245,20 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-xs text-slate-600 border-t border-slate-800/60 mt-6">
-        Figures update live as you type. Your inputs are saved locally in this browser only —
-        nothing is sent to a server.
+      <footer className="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-xs text-slate-600 border-t border-slate-800/60 mt-6 flex flex-wrap items-center justify-between gap-3">
+        <span>
+          Figures update live as you type. Your inputs are saved locally in this browser only —
+          nothing is sent to a server.
+        </span>
+        <a
+          href={NEW_IDEA_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 shrink-0 hover:text-orange-400 transition-colors"
+        >
+          <Lightbulb size={12} />
+          Suggest an idea
+        </a>
       </footer>
     </div>
   );
