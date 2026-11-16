@@ -47,7 +47,20 @@ export function convert(
 ): ConversionResult {
   const lineItems: SplunkLineItem[] = [];
 
-  // 1. Infrastructure Monitoring hosts (from Server Visibility + DB instances + containers)
+  // 1. APM hosts
+  const rawApmHosts = appd.apmUnits * a.apmUnitToHostRatio;
+  lineItems.push({
+    key: 'apm-hosts',
+    product: 'APM',
+    metric: 'Monitored hosts',
+    rawQuantity: rawApmHosts,
+    quantityWithHeadroom: withHeadroom(rawApmHosts, a),
+    unit: 'hosts',
+    note: `${appd.apmUnits} AppD APM unit(s) (${appd.apmEdition} edition) \u00D7 ${a.apmUnitToHostRatio}. Splunk APM is a single SKU (no Premium/Enterprise/Peak tiers) \u2014 AlwaysOn Profiling and Trace Analyzer are separate add-ons that roughly cover AppD's higher-tier diagnostics features.`,
+    sourceNote: 'AppDynamics: APM (Java/.NET/Node/PHP/Python agents)',
+  });
+
+  // 2. Infrastructure Monitoring hosts (from Server Visibility + DB instances + containers)
   const hostsFromServers = appd.serverInstances * a.serverToHostRatio;
   const hostsFromDb = appd.dbRunsOnExistingServer
     ? 0
@@ -67,19 +80,6 @@ export function convert(
       appd.containers
     } container(s) at ${a.containersPerHost}/host.`,
     sourceNote: 'AppDynamics: Server Visibility (SIM), Database Monitoring, Cloud Native containers',
-  });
-
-  // 2. APM hosts
-  const rawApmHosts = appd.apmUnits * a.apmUnitToHostRatio;
-  lineItems.push({
-    key: 'apm-hosts',
-    product: 'APM',
-    metric: 'Monitored hosts',
-    rawQuantity: rawApmHosts,
-    quantityWithHeadroom: withHeadroom(rawApmHosts, a),
-    unit: 'hosts',
-    note: `${appd.apmUnits} AppD APM unit(s) (${appd.apmEdition} edition) \u00D7 ${a.apmUnitToHostRatio}. Splunk APM is a single SKU (no Premium/Enterprise/Peak tiers) \u2014 AlwaysOn Profiling and Trace Analyzer are separate add-ons that roughly cover AppD's higher-tier diagnostics features.`,
-    sourceNote: 'AppDynamics: APM (Java/.NET/Node/PHP/Python agents)',
   });
 
   // 3. RUM sessions
