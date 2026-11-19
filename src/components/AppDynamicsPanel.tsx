@@ -135,12 +135,12 @@ export function EndUserMonitoringSection({
             step={0.5}
           />
           <NumberField
-            label="Avg. page views per session"
-            value={assumptions.pageViewsPerSession}
+            label="Sessions per page view"
+            value={assumptions.sessionsPerPageView}
             onChange={(v) =>
-              onAssumptionsChange({ ...assumptions, pageViewsPerSession: v })
+              onAssumptionsChange({ ...assumptions, sessionsPerPageView: v })
             }
-            step={0.5}
+            step={0.1}
           />
         </div>
       </div>

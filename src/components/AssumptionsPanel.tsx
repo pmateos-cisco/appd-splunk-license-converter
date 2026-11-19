@@ -62,10 +62,10 @@ export function AssumptionsPanel({
           accent="orange"
         />
         <NumberField
-          label="Page views per RUM session"
-          value={value.pageViewsPerSession}
-          onChange={(v) => set('pageViewsPerSession', v)}
-          step={0.5}
+          label="Sessions per RUM page view"
+          value={value.sessionsPerPageView}
+          onChange={(v) => set('sessionsPerPageView', v)}
+          step={0.1}
           accent="orange"
         />
         <NumberField
