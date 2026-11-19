@@ -1,5 +1,5 @@
 import { Server, Boxes, Globe, Smartphone } from 'lucide-react';
-import type { AppDynamicsEntitlements } from '../types';
+import type { AppDynamicsEntitlements, ConversionAssumptions } from '../types';
 import { NumberField, SelectField, ToggleField } from './Field';
 
 type Setter = <K extends keyof AppDynamicsEntitlements>(
@@ -113,22 +113,36 @@ export function DatabaseSection({
 export function EndUserMonitoringSection({
   value,
   onChange,
+  assumptions,
+  onAssumptionsChange,
 }: {
   value: AppDynamicsEntitlements;
   onChange: (v: AppDynamicsEntitlements) => void;
+  assumptions: ConversionAssumptions;
+  onAssumptionsChange: (v: ConversionAssumptions) => void;
 }) {
   const set = useSetter(value, onChange);
   return (
     <div className="space-y-5">
       <div>
         <SubLabel icon={<Globe size={12} />} text="Browser RUM" />
-        <NumberField
-          label="Monthly page views"
-          value={value.browserPageViewsM}
-          onChange={(v) => set('browserPageViewsM', v)}
-          suffix="million/mo"
-          step={0.5}
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <NumberField
+            label="Monthly page views"
+            value={value.browserPageViewsM}
+            onChange={(v) => set('browserPageViewsM', v)}
+            suffix="million/mo"
+            step={0.5}
+          />
+          <NumberField
+            label="Avg. page views per session"
+            value={assumptions.pageViewsPerSession}
+            onChange={(v) =>
+              onAssumptionsChange({ ...assumptions, pageViewsPerSession: v })
+            }
+            step={0.5}
+          />
+        </div>
       </div>
 
       <div>

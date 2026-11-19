@@ -223,7 +223,14 @@ export default function App() {
             icon={<Users size={16} />}
             appdLabel="End User Monitoring"
             splunkLabel="RUM"
-            appdContent={<EndUserMonitoringSection value={appd} onChange={setAppd} />}
+            appdContent={
+              <EndUserMonitoringSection
+                value={appd}
+                onChange={setAppd}
+                assumptions={assumptions}
+                onAssumptionsChange={setAssumptions}
+              />
+            }
             splunkContent={<ResultCard item={byKey['rum-sessions']} />}
           />
 
