@@ -46,8 +46,8 @@ export interface ConversionAssumptions {
   dbInstanceToDbMonitoringRatio: number;
   /** How many monitored containers roll up into one Splunk IM host-equivalent license */
   containersPerHost: number;
-  /** Browser RUM sessions generated per monthly page view */
-  sessionsPerPageView: number;
+  /** Average Browser RUM page views per user session */
+  pageViewsPerSession: number;
   /** Average Mobile RUM app launches per user session */
   launchesPerSession: number;
   /** 1 AppD synthetic check run maps to this many Splunk Synthetic run units */

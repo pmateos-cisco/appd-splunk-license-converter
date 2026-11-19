@@ -24,7 +24,7 @@ export const DEFAULT_ASSUMPTIONS: ConversionAssumptions = {
   dbInstanceToHostRatio: 1,
   dbInstanceToDbMonitoringRatio: 1,
   containersPerHost: 16,
-  sessionsPerPageView: 0.2,
+  pageViewsPerSession: 5,
   launchesPerSession: 1,
   syntheticRunRatio: 1,
   avgEventSizeKb: 1,
@@ -104,7 +104,7 @@ export function convert(
   });
 
   // 4. RUM sessions
-  const browserSessionsM = appd.browserPageViewsM * a.sessionsPerPageView;
+  const browserSessionsM = (appd.browserPageViewsM) / Math.max(a.pageViewsPerSession, 0.0001);
   const mobileSessionsM = (appd.mobileLaunchesM) / Math.max(a.launchesPerSession, 0.0001);
   const rawRumSessions = (browserSessionsM + mobileSessionsM) * 1_000_000;
   const rumPackSize = 1000;
@@ -117,7 +117,7 @@ export function convert(
     unit: 'sessions/mo',
     packSize: rumPackSize,
     packs: Math.ceil(withHeadroom(rawRumSessions, a) / rumPackSize),
-    note: `${round(browserSessionsM, 2)}M sessions from Browser RUM (${appd.browserPageViewsM}M page views \u00D7 ${a.sessionsPerPageView} sessions/page view) + ${round(
+    note: `${round(browserSessionsM, 2)}M sessions from Browser RUM (${appd.browserPageViewsM}M page views \u00F7 ${a.pageViewsPerSession}/session) + ${round(
       mobileSessionsM,
       2,
     )}M sessions from Mobile RUM (${appd.mobileLaunchesM}M launches \u00F7 ${a.launchesPerSession}/session). Splunk RUM is sold in packs of ${rumPackSize.toLocaleString()} sessions/month.`,
